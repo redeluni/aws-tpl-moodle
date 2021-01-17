@@ -37,12 +37,13 @@ Se vuoi solo distribuire lo stack Moodle, segui questi passaggi. Puoi leggere i 
 3. Una volta completata la distribuzione dello stack, accedere al sito Web per completare l'installazione di Moodle. *NOTE: È possibile che si verifichi un errore 504 Gateway Timeout o CloudFront nel passaggio finale della procedura guidata di installazione (dopo aver impostato la password dell'amministratore). Puoi semplicemente aggiornare la pagina per completare l'installazione.* Potresti anche vedere "L'installazione deve essere completata dall'indirizzo IP originale, mi dispiace". per risolvere questo problema dovrai aggiornare il tuo database e impostare il campo lastip della tabella mdl_user sull'indirizzo IP interno del tuo ALB (puoi trovarlo guardando le interfacce di rete dalla pagina EC2 nella Console AWS). Dal webserver puoi eseguire:
 psql -h <hostname> -U<Username>
 update mdl_user set lastip='<ip address>';
-4) Configure Application caching in Moodle Site Configuration (see below for details).
-5) Now you can update the stack that you just deployed to enable session caching and set the Min and Max Auto Scaling Group size values as desired.
+4. Configurare la memorizzazione nella cache dell'applicazione nella configurazione del sito Moodle (vedere di seguito per i dettagli).
+5. Ora puoi aggiornare lo stack appena distribuito per abilitare la memorizzazione nella cache della sessione e impostare i valori di dimensione del gruppo Auto Scaling Min e Max come desiderato.
 
-*Note you can reach the webserver by changing the minimum number of bastion hosts to 1 in the Auto Scaling Group or enable Systems Manager Session Manager by updating the IAM role assigned to the webserver instance (https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-getting-started-instance-profile.html)
+*Note: puoi raggiungere il server web modificando il numero minimo di bastion host su 1 nel gruppo Auto Scaling o abilitare Systems Manager Session Manager aggiornando il ruolo IAM assegnato all'istanza del server web (https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-getting-started-instance-profile.html)
 
-You can launch this CloudFormation stack, using your account, in the following AWS Regions. The template will work in other regions as Aurora PostgreSQL is deployed globally.
+Puoi avviare questo stack CloudFormation, utilizzando il tuo account, nelle seguenti regioni AWS.
+Il modello funzionerà in altre regioni poiché Aurora PostgreSQL viene distribuito a livello globale.
 
 | AWS Region Code | Name | Launch |
 | --- | --- | ---
