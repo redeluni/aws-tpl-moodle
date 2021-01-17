@@ -67,19 +67,32 @@ Se prevedi di utilizzare Transport Layer Security (TLS), devi creare o importare
 Inoltre, se si utilizza CloudFront e si ospita Moodle in una regione diversa da us-east-1, è necessario creare o importare il certificato sia in us-east-1 che nella regione in cui si ospita Moodle. 
 CloudFront utilizza sempre i certificati da us-east-1.
 
+---
 ### Application Load Balancer
+Un Application Load Balancer distribuisce il traffico delle applicazioni in entrata su più istanze EC2 in più zone di disponibilità. 
+Ottieni un'elevata disponibilità raggruppando più server Moodle dietro un bilanciatore del carico. 
+Moodle fornisce una panoramica di [Server Clustering](https://docs.moodle.org/34/en/Server_cluster) che dovresti esaminare prima di procedere. 
+Il modello avvierà un Application Load Balancer (ALB).
 
-An Application Load Balancer distributes incoming application traffic across multiple EC2 instances in multiple Availability Zones. You achieve high availability by clustering multiple Moodle servers behind a load balancer. Moodle provides an overview of [Server Clustering](https://docs.moodle.org/34/en/Server_cluster) that you should review before proceeding. The template will launch an Application Load Balancer (ALB).
-
+---
 ### Amazon Autoscaling
+Amazon EC2 Auto Scaling ti aiuta a garantire di avere il numero corretto di istanze Amazon EC2 disponibili per gestire il carico della tua applicazione. 
+Il modello configura la scalabilità automatica in base all'utilizzo della CPU.
+Viene aggiunta un'istanza aggiuntiva quando l'utilizzo medio della CPU supera il 75% per tre minuti e rimossa quando l'utilizzo medio della CPU è inferiore al 25% per tre minuti. 
+In base al tipo di istanza in esecuzione, alla configurazione della cache scelta e ad altri fattori, potresti scoprire che un'altra metrica è un migliore predittore di carico. 
+Sentiti libero di modificare le metriche secondo necessità.
 
-Amazon EC2 Auto Scaling helps you ensure that you have the correct number of Amazon EC2 instances available to handle the load for your application. The template configures autoscaling based on CPU utilization. An additional instance is added when the average CPU utilization exceeds 75% for three minutes and removed when the average CPU utilization is less than 25% for three minutes. Based on the instance type you are running, cache configuration you choose, and other factors, you may find that another metric is a better predictor of load. Feel free to change the metrics as needed.
+*Nota che la procedura guidata di installazione causa picchi nella CPU che potrebbero causare una scalabilità imprevista del cluster. 
+Inizialmente, dovresti distribuire un singolo server impostando la dimensione ASG minima e massima su uno. 
+Quindi, completa la procedura guidata di configurazione di Moodle e aggiorna lo stack di CloudFormation impostando la dimensione ASG minima e massima sui limiti desiderati.*
 
-_Note that the installation wizard causes spikes in CPU that could cause the cluster to scale unexpectedly. Initially, you should deploy a single server by setting the Min and Max ASG size to one. Then, complete the Moodle configuration wizard, and update CloudFormation stack setting the min and max ASG size to your desired limits._
-
+---
 ### Amazon Elastic File System (EFS)
-
-Amazon Elastic File System (Amazon EFS) provides simple, scalable file storage for use with Amazon EC2 instances in the AWS Cloud. While installing Moodle on EFS would make management (updates, patching, etc.) easier, Moodle does not perform well when run from shared storage. Moodle recommends that dirroot is configured on local storage. Therefore, the template uses a combination of Elastic Block Storage (EBS) and EFS storage. Each web server in the Moodle Cluster employs the following directory structure:
+Amazon Elastic File System (Amazon EFS) fornisce uno storage di file semplice e scalabile da utilizzare con le istanze Amazon EC2 nel cloud AWS. 
+Mentre l'installazione di Moodle su EFS semplifica la gestione (aggiornamenti, patch, ecc.), Moodle non funziona bene quando viene eseguito dallo storage condiviso. 
+Moodle consiglia di configurare dirroot sulla memoria locale.
+Pertanto, il modello utilizza una combinazione di EBS (Elastic Block Storage) e di archiviazione EFS. 
+Ciascun server Web nel cluster Moodle utilizza la seguente struttura di directory:
 
 ```
 $CFG->dirroot = '/var/www/moodle/html'        #Stored on root EBS volume
@@ -89,17 +102,26 @@ $CFG->tempdir = '/var/www/moodle/temp'        #Stored on shared EFS filesystem
 $CFG->localcachedir = '/var/www/moodle/local' #Stored on root EBS volume
 ```
 
-Elastic File System throughput scales as the file system grows. Initially EFS will have very little storage. Therefore, the template gives you the option to seed the file system with data to establish baseline performance. In addition, you can monitor the file system performance and add additional data if needed. There is a through discussion of this in the WordPress Reference Architecture. However, because we have chosen to install Moodle on local storage (the WordPress reference architecture installed on EFS) this should be less of a concern that it was for WordPress.
+Il throughput di Elastic File System scala con la crescita del file system. Inizialmente EFS disporrà di uno spazio di archiviazione minimo. 
+Pertanto, il modello offre la possibilità di eseguire il seeding del file system con i dati per stabilire le prestazioni di base. Inoltre, è possibile monitorare le prestazioni del file system e aggiungere dati aggiuntivi se necessario. 
+C'è una discussione approfondita di questo nell'architettura di riferimento di WordPress. 
+Tuttavia, poiché abbiamo scelto di installare Moodle sullo storage locale (l'architettura di riferimento di WordPress installata su EFS), questo dovrebbe essere meno preoccupante di quanto lo fosse per WordPress.
 
-_Moodle recommends that when running clustered solutions "[dirroot should be always read only for apache process because otherwise built in plugin installation and uninstallation would get the nodes out of sync.](https://docs.moodle.org/34/en/Server_cluster#.24CFG-.3Edirroot)" As this statement implies, you cannot install plugins to a server cluster from the admin page. Moodle recommends manually installing plugins on each server during planned maintenance. To stay true to the infrastructure-as-code methodology employed by CloudFormation, we should script the installation of plugins. Alternatively, you could install the plugin on a single server, create an AMI, and update the Launch Configuration._
+*Moodle consiglia quando si eseguono soluzioni in cluster
+[dirroot dovrebbe essere sempre letto solo per il processo apache perché altrimenti l'installazione e la disinstallazione del plugin incorporate porterebbero i nodi fuori sincrono](https://docs.moodle.org/34/en/Server_cluster#.24CFG-.3Edirroot)
+Come implica questa dichiarazione, non è possibile installare plug-in su un cluster di server dalla pagina di amministrazione. 
+Moodle consiglia di installare manualmente i plugin su ciascun server durante la manutenzione pianificata. 
+Per rimanere fedeli alla metodologia dell'infrastruttura come codice utilizzata da CloudFormation, dovremmo creare uno script per l'installazione dei plugin. 
+In alternativa, puoi installare il plug-in su un singolo server, creare un'AMI e aggiornare la configurazione di avvio.*
 
+---
 ### Caching
 
 La memorizzazione nella cache può avere un impatto notevole sulle prestazioni di Moodle. Il modello configurerà varie forme di memorizzazione nella cache tra cui OPcache, CloudFront ed ElastiCache.
 
+---
 #### OPcache
-
-Opcache speeds up PHP execution caching precompiled scripts in memory. OPcache benefits are increased performance and significantly lower memory usage. The template configures OPcache as described [here](https://docs.moodle.org/34/en/OPcache).
+Opcache accelera l'esecuzione di PHP memorizzando nella cache gli script precompilati. I vantaggi di OPcache sono prestazioni migliorate e un utilizzo della memoria notevolmente inferiore. Il modello configura OPcache come descritto [qui](https://docs.moodle.org/34/en/OPcache).
 
 #### Amazon ElastiCache
 
