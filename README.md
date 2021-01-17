@@ -4,13 +4,7 @@
 
 ---
 
-© 2018 Amazon Web Services, Inc. and its affiliates. All rights reserved. This work may not be reproduced or redistributed, in whole or in part, without prior written permission from Amazon Web Services, Inc. Commercial copying, lending, or selling is prohibited.
-
-Errors or corrections? Please create an issue and we will repsond to you.
-
----
-
-## Overview
+## Panoramica
 
 Questo repository è costituito da un set di modelli nidificati che distribuiscono un ambiente Moodle altamente disponibile, elastico e scalabile su AWS.
 
@@ -56,9 +50,11 @@ Il modello funzionerà in altre regioni poiché Aurora PostgreSQL viene distribu
 | eu-central-1    | EU (Frankfurt)        | [![cloudformation-launch-stack](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/new?stackName=Moodle&templateURL=https://cat-ccle-aws-refarch-moodle.s3-us-west-2.amazonaws.com/00-master.yaml)   |
 | ap-southeast-2  | AP (Sydney)           | [![cloudformation-launch-stack](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=Moodle&templateURL=https://cat-ccle-aws-refarch-moodle.s3-us-west-2.amazonaws.com/00-master.yaml) |
 
-## Architecture
+---
+### Architettura
+Le sezioni seguenti descrivono i singoli componenti dell'architettura.
 
-The following sections describe the individual components of the architecture. This architecture borrows liberally from the [WordPress Reference Architecture](https://github.com/awslabs/aws-refarch-wordpress). You may want to review that in addition to the discussion below.
+This architecture borrows liberally from the [WordPress Reference Architecture](https://github.com/awslabs/aws-refarch-wordpress). You may want to review that in addition to the discussion below.
 
 ![](images/aws-refarch-moodle-architecture.png)
 
