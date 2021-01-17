@@ -58,9 +58,14 @@ This architecture borrows liberally from the [WordPress Reference Architecture](
 
 ![](images/aws-refarch-moodle-architecture.png)
 
-### AWS Certificate Manager
-
-AWS Certificate Manager is a service that lets you easily provision, manage, and deploy Secure Sockets Layer/Transport Layer Security (SSL/TLS) certificates for use with AWS services. You should run SSL/TLS to protect sessions and passwords. If you plan to use Transport Layer Security (TLS), you must create or import a TLS certificate in AWS Certificate Manager before you launching the template. In addition, if you are using CloudFront and hosting Moodle in a region other than us-east-1, you must create or import the certificate in both us-east-1 and the region you are hosting Moodle in. CloudFront always uses certificates from us-east-1.
+---
+### AWS-Certificate-Manager
+AWS Certificate Manager è un servizio che ti consente di fornire, 
+gestire e distribuire facilmente certificati Secure Sockets Layer/Transport Layer Security (SSL/TLS) da utilizzare con i servizi AWS. 
+È necessario eseguire SSL/TLS per proteggere sessioni e password. 
+Se prevedi di utilizzare Transport Layer Security (TLS), devi creare o importare un certificato TLS in AWS Certificate Manager prima di avviare il modello. 
+Inoltre, se si utilizza CloudFront e si ospita Moodle in una regione diversa da us-east-1, è necessario creare o importare il certificato sia in us-east-1 che nella regione in cui si ospita Moodle. 
+CloudFront utilizza sempre i certificati da us-east-1.
 
 ### Application Load Balancer
 
