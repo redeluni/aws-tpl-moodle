@@ -30,12 +30,11 @@ Questa architettura di riferimento fornisce un set di modelli YAML per la distri
 Questa architettura può essere eccessiva per molte distribuzioni di Moodle, tuttavia i modelli possono essere eseguiti individualmente e / o modificati per distribuire un sottoinsieme dell'architettura che si adatta alle tue esigenze.
 
 ## TL;DR
+Se vuoi solo distribuire lo stack Moodle, segui questi passaggi. Puoi leggere i dettagli di seguito per comprendere meglio l'architettura.
 
-If you just want to deploy the Moodle stack follow these steps. You can read the detail below to better understand the architecture.
-
-1) If you plan to use TLS, you must create or import your certificate into Amazon Certificate Manager before launching Moodle.
-2) Deploy the 00-master.yaml stack. **Do not enable session caching in ElastiCache and leave both the Min and Max Auto Scaling Group (ASG) size set to one.** The installation wizard will not complete if you have session caching configured.
-3) After the stack deployment completes, navigate to the web site to complete the Moodle installation. *NOTE: You may encounter a 504 Gateway Timeout or CloudFront error on the final step of the installation wizard (after setting admin password). You can simply refresh the page to complete the installation.*  You may also see "Installation must be finished from the original IP address, sorry." to solve this you will need to update your database and set the lastip field of the mdl_user table to the internal ip address of your ALB (you can find this by looking at the Network Interfaces from the EC2 page in the AWS Console).  From the webserver you can run:
+1. Se prevedi di utilizzare `TLS`, devi creare o importare il certificato in Amazon Certificate Manager prima di avviare Moodle.
+2. Distribuisci lo stack 00-master.yaml. **Non abilitare il caching della sessione in ElastiCache e lasciare entrambe le dimensioni Min e Max Auto Scaling Group (ASG) impostate su uno.** La procedura guidata di installazione non verrà completata se la cache della sessione è configurata.
+3. Una volta completata la distribuzione dello stack, accedere al sito Web per completare l'installazione di Moodle. *NOTE: È possibile che si verifichi un errore 504 Gateway Timeout o CloudFront nel passaggio finale della procedura guidata di installazione (dopo aver impostato la password dell'amministratore). Puoi semplicemente aggiornare la pagina per completare l'installazione.* Potresti anche vedere "L'installazione deve essere completata dall'indirizzo IP originale, mi dispiace". per risolvere questo problema dovrai aggiornare il tuo database e impostare il campo lastip della tabella mdl_user sull'indirizzo IP interno del tuo ALB (puoi trovarlo guardando le interfacce di rete dalla pagina EC2 nella Console AWS). Dal webserver puoi eseguire:
 psql -h <hostname> -U<Username>
 update mdl_user set lastip='<ip address>';
 4) Configure Application caching in Moodle Site Configuration (see below for details).
