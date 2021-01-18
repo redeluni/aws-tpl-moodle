@@ -123,40 +123,48 @@ La memorizzazione nella cache può avere un impatto notevole sulle prestazioni d
 #### OPcache
 Opcache accelera l'esecuzione di PHP memorizzando nella cache gli script precompilati. I vantaggi di OPcache sono prestazioni migliorate e un utilizzo della memoria notevolmente inferiore. Il modello configura OPcache come descritto [qui](https://docs.moodle.org/34/en/OPcache).
 
-#### Amazon ElastiCache
+---
+#### Amazon-ElastiCache
+Amazon ElastiCache per Memcached è un servizio di archivio di valori-chiave in memoria compatibile con Memcached che può essere utilizzato come cache o archivio dati. 
+Moodle consiglia di 
+[non utilizzare lo stesso server memcached per entrambe le sessioni e MUC. Gli eventi che attivano l'eliminazione delle cache MUC portano all'eliminazione di MUC dal server memcached](https://docs.moodle.org/26/en/Session_handling).
+Pertanto, il modello configura due cluster elasticache, uno per la memorizzazione nella cache della sessione e uno per la memorizzazione nella cache dell'applicazione.
 
-Amazon ElastiCache for Memcached is a Memcached-compatible in-memory key-value store service that can be used as a cache or a data store. Moodle recommends that you [don't use the same memcached server for both sessions and MUC. Events triggering MUC caches to be purged leads to MUC purging the memcached server](https://docs.moodle.org/26/en/Session_handling). Therefore, the template configures two elasticache clusters, one for session caching and one for application caching.
-
+---
 ##### Session Caching
+Moodle consiglia di 
+[memorizzare le sessioni utente in un server memcached condiviso](https://docs.moodle.org/34/en/Server_cluster#Performance_recommendations)
+Il modello configura la memorizzazione nella cache della sessione come descritto [qui] (https://docs.moodle.org/34/en/Session_handling#Memcached_session_driver).
 
-Moodle recommends that you [store user sessions in one shared memcached server](https://docs.moodle.org/34/en/Server_cluster#Performance_recommendations). The template configures session caching as described [here](https://docs.moodle.org/34/en/Session_handling#Memcached_session_driver).
+*Note: l'installazione guidata di Moodle fallisce se la memorizzazione nella cache della sessione memcached è abilitata durante la configurazione iniziale. Pertanto, è necessario lasciare la cache della sessione disabilitata durante l'installazione iniziale, quindi aggiornare il modello per abilitare la cache della sessione dopo aver completato l'installazione.*
 
-_Note: Moodle installation wizard fails if memcached session caching is enabled during the initial configuration. Therefore, you must leave session caching disabled during the initial installation, and then update the template to enable session caching after completing the installation._
-
+---
 ##### Application Caching
-
-The template deploys an ElastiCache cluster for application caching, but the application caching must be configured after launch. You can configure memcache as described [here](https://docs.moodle.org/28/en/Caching#Memcached) filling in the auto-discovery endpoint to the list of Servers under both Store Configuration and Enable Clustered Servers (see image below). You can find the endpoint address in the outputs of the application caching stack. Finally, scroll to the bottom of the caching administration page in Moodle and set elasticache as the default store for application caching.
+Il modello distribuisce un cluster ElastiCache per la memorizzazione nella cache dell'applicazione, ma la memorizzazione nella cache dell'applicazione deve essere configurata dopo l'avvio. 
+È possibile configurare memcache come descritto 
+[qui](https://docs.moodle.org/28/en/Caching#Memcached) inserendo l'endpoint di rilevamento automatico nell'elenco dei server sia in Configurazione archivio che in Abilita server cluster (vedere immagine sotto). 
+È possibile trovare l'indirizzo dell'endpoint negli output dello stack di memorizzazione nella cache dell'applicazione. Infine, scorri fino alla fine della pagina di amministrazione della cache in Moodle e imposta elasticache come archivio predefinito per la memorizzazione nella cache dell'applicazione.
 
 ![](images/aws-refarch-moodle-caching.png)
 
-#### Amazon CloudFront
+---
+#### Amazon-CloudFront
+Amazon CloudFront è un servizio CDN (Content Delivery Network) globale che fornisce in modo sicuro dati, video, applicazioni e API ai tuoi spettatori con bassa latenza e velocità di trasferimento elevate. Il modello può facoltativamente configurare CloudFront per memorizzare nella cache il contenuto più vicino ai tuoi utenti. Ciò è particolarmente vantaggioso se i tuoi utenti sono distribuiti su una vasta area geografica. Ad esempio, studenti remoti in un programma online.
 
-Amazon CloudFront is a global content delivery network (CDN) service that securely delivers data, videos, applications, and APIs to your viewers with low latency and high transfer speeds. The template can optionally configure CloudFront to cache content closer to your users. This is especially beneficial if your users are spread across a large geographic area. For example, remote students in an online program.
-
-### Amazon Route 53
-
+---
+### Amazon-Route 53
 Amazon Route 53 è un servizio Web DNS (Domain Name System) cloud altamente disponibile e scalabile.
 Il modello configurerà facoltativamente un alias Route53 che punta ad Application Load Balancer o CloudFront.
 Se stai utilizzando un altro sistema DNS, devi creare un record CNAME nel tuo sistema DNS per fare riferimento ad Application Load Balancer o CloudFront (se distribuito).
 Se non hai accesso al DNS, puoi lasciare vuoto il campo Nome dominio e il modello configurerà Moodle per utilizzare il nome di dominio di Application Load Balancer generato automaticamente.
 
-## License
+---
+### License
+Questa libreria è concessa in licenza con la licenza Apache 2.0.
 
-This library is licensed under the Apache 2.0 License.
+Copyright di parti.
 
-Portions copyright.
+- Moodle è concesso in licenza in base alla General Public License (GPLv3 o successiva) della Free Software Foundation.
+- OPcache è concesso in licenza con licenza PHP, versione 3.01.
 
-- Moodle is licensed under the General Public License (GPLv3 or later) from the Free Software Foundation.
-- OPcache is licensed under PHP License, version 3.01.
-
-Please see LICENSE for applicable license terms and NOTICE for applicable notices.
+Consultare LICENZA per i termini di licenza applicabili e AVVISO per gli avvisi applicabili.
